@@ -28,7 +28,7 @@ pipeline {
                 defectDojoPublisher(artifact: '/home/kacper/Documents/DevSecOps/Test/reports/zap_xml_report.xml',
                                     productName: 'Juice Shop',
                                     scanType: 'ZAP Scan',
-                                    engagementName: 'kacperczerwinski925@wp.pl')     
+                                    engagementName: 'kacper.czerwinski925@wp.pl')     
             }
 
             archiveArtifacts artifacts: '/home/kacper/Documents/DevSecOps/Test/**/*', fingerprint: true, allowEmptyArchive: true
