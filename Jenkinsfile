@@ -8,7 +8,6 @@ pipeline {
         stage('Step 1: Verify and Archive Scan Results') {
             steps {
                 echo "Verifying scan results..."
-
             }
         }
     }
@@ -16,22 +15,21 @@ pipeline {
     post {
         always {
             script {
-                //echo "Cleaning up Docker containers..."
-                //sh '''
-                //    docker stop zap juice-shop || true
-                //    docker rm zap juice-shop || true
-                //'''
-                //echo "Containers stopped and removed."
+                // Kopiowanie raportu do katalogu roboczego Jenkinsa
+                echo "Copying ZAP XML report to workspace..."
+                sh 'cp /home/kacper/Documents/DevSecOps/Test/reports/zap_xml_report.xml $WORKSPACE/reports/'
 
+                // Sprawdzanie, czy raport został poprawnie skopiowany i wysyłanie go do DefectDojo
                 echo "Checking if ZAP XML report exists..."
                 echo "Sending ZAP XML report to DefectDojo..."
-                defectDojoPublisher(artifact: '/home/kacper/Documents/DevSecOps/Test/reports/zap_xml_report.xml',
+                defectDojoPublisher(artifact: '$WORKSPACE/reports/zap_xml_report.xml', // zmiana na ścieżkę do workspace
                                     productName: 'Juice Shop',
                                     scanType: 'ZAP Scan',
-                                    engagementName: 'kacper.czerwinski925@wp.pl')     
+                                    engagementName: 'kacper.czerwinski925@wp.pl')
             }
 
-            archiveArtifacts artifacts: '/home/kacper/Documents/DevSecOps/Test/**/*', fingerprint: true, allowEmptyArchive: true
+            // Archiwizacja wszystkich artefaktów z katalogu workspace
+            archiveArtifacts artifacts: 'reports/**/*', fingerprint: true, allowEmptyArchive: true
         }
     }
 }
