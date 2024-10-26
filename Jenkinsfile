@@ -98,12 +98,12 @@ pipeline {
     post {
         always {
             script {
-                echo "Cleaning up Docker containers..."
-                sh '''
-                    docker stop zap juice-shop || true
-                    docker rm zap juice-shop || true
-                '''
-                echo "Containers stopped and removed."
+                //echo "Cleaning up Docker containers..."
+                //sh '''
+                //    docker stop zap juice-shop || true
+                //    docker rm zap juice-shop || true
+                //'''
+                //echo "Containers stopped and removed."
 
                 echo "Checking if ZAP XML report exists..."
                 if (fileExists('/home/kacper/Documents/DevSecOps/Test/reports/zap_xml_report.xml')) {
