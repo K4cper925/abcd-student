@@ -19,18 +19,18 @@ pipeline {
             }
         }
 
-        stage('Step 2: Prepare Juice Shop Application for Testing') {
-            steps {
-                script {
-                    echo "Starting Juice Shop application..."
-                    sh '''
-                        docker run --name juice-shop -d --rm -p 3000:3000 bkimminich/juice-shop
-                    '''
-                    echo "Juice Shop is running. Waiting for 5 seconds..."
-                    sleep(5)
-                }
-            }
-        }
+        //stage('Step 2: Prepare Juice Shop Application for Testing') {
+        //    steps {
+        //        script {
+        //            echo "Starting Juice Shop application..."
+        //            sh '''
+        //                docker run --name juice-shop -d --rm -p 3000:3000 bkimminich/juice-shop
+        //            '''
+        //            echo "Juice Shop is running. Waiting for 5 seconds..."
+        //            sleep(5)
+        //        }
+        //    }
+        //}
 
         stage('Step 3: Prepare Directory for Scan Results') {
             steps {
