@@ -68,7 +68,7 @@ pipeline {
                 //echo "Containers stopped and removed."
 
                 echo "Checking if ZAP XML report exists..."
-                if (fileExists('${WORKSPACE}/raport_osv.json')) {
+                if (fileExists('${WORKSPACE}/osv_scan_report.json')) {
                     echo "Sending ZAP XML report to DefectDojo..."
                     defectDojoPublisher(artifact: '${WORKSPACE}/osv_scan_report.json',
                                         productName: 'Juice Shop',
