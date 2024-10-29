@@ -38,6 +38,7 @@ pipeline {
                 sh '''
                     mkdir -p /home/kacper/Documents/DevSecOps/Test/osv_reports
                     chmod -R 777 /home/kacper/Documents/DevSecOps/Test/osv_reports
+                    osv-scanner --version
                 '''
                 echo "Directory created. Waiting for 5 seconds..."
                 sleep(5)
