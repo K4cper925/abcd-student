@@ -34,7 +34,7 @@ pipeline {
                 echo "Copying OSV report to workspace..."
                 sh 'cp /home/kacper/Documents/DevSecOps/abcd-student/raport_osv.json $WORKSPACE/reports/'
 
-                defectDojoPublisher(artifact: '$WORKSPACE/reports/raport_osv.json',
+                defectDojoPublisher(artifact: '$WORKSPACE/raport_osv.json',
                                         productName: 'Juice Shop',
                                         scanType: 'OSV Scan',
                                         engagementName: 'kacperczerwinski925@wp.pl')
