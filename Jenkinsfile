@@ -18,46 +18,10 @@ pipeline {
                 }
             }
         }
-
-        //stage('Step 2: Prepare Juice Shop Application for Testing') {
-        //    steps {
-        //        script {
-        //            echo "Starting Juice Shop application..."
-        //            sh '''
-        //                docker run --name juice-shop -d --rm -p 3000:3000 bkimminich/juice-shop
-        //            '''
-        //            echo "Juice Shop is running. Waiting for 5 seconds..."
-        //            sleep(5)
-        //        }
-        //    }
-        //}
-
-        stage('Step 3: Run OSV-Scanner for Vulnerability Scanning') {
-            steps {
-                script {
-                    echo "Running OSV-Scanner as a Docker container..."
-                    sh '''
-                        docker run --rm -v ${WORKSPACE}:/workspace:ro gcr.io/osv-scanner/osv-scanner --output osv_scan_report.json --path /workspace
-                    '''
-                    echo "OSV-Scanner scan completed. Waiting for 5 seconds..."
-                    sleep(5)
-                }
-            }
-        }
-
-        stage('Step 4: Verify and Archive Scan Results') {
-            steps {
-                echo "Verifying OSV-Scanner scan results..."
-                sh 'ls -al ${WORKSPACE}'
-                echo "Archiving OSV-Scanner scan results..."
-                archiveArtifacts artifacts: 'osv_scan_report.json', fingerprint: true, allowEmptyArchive: true
-                echo "Scan results archived. Waiting for 5 seconds..."
-                sleep(5)
-            }
-        }
+       
     }
 
-    post {
+    ppost {
         always {
             script {
                 //echo "Cleaning up Docker containers..."
@@ -67,16 +31,15 @@ pipeline {
                 //'''
                 //echo "Containers stopped and removed."
 
-                echo "Checking if ZAP XML report exists..."
-                if (fileExists('${WORKSPACE}/osv_scan_report.json')) {
-                    echo "Sending ZAP XML report to DefectDojo..."
-                    defectDojoPublisher(artifact: '${WORKSPACE}/osv_scan_report.json',
+                echo "Copying OSV report to workspace..."
+                sh 'cp /home/kacper/Documents/DevSecOps/abcd-student/raport_osv.json $WORKSPACE/reports/'
+
+                defectDojoPublisher(artifact: '$WORKSPACE/reports/raport_osv.json',
                                         productName: 'Juice Shop',
                                         scanType: 'OSV Scan',
                                         engagementName: 'kacperczerwinski925@wp.pl')
-                } else {
-                    echo "OSV report not found, skipping DefectDojo upload."
-                }
+       
+          
             }
 
             archiveArtifacts artifacts: '/home/kacper/Documents/DevSecOps/Test/**/*', fingerprint: true, allowEmptyArchive: true
