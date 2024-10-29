@@ -36,6 +36,7 @@ pipeline {
             steps {
                 echo "Creating directory for scan results..."
                 sh '''
+                    pwd
                     mkdir -p /home/kacper/Documents/DevSecOps/Test/osv_reports
                     chmod -R 777 /home/kacper/Documents/DevSecOps/Test/osv_reports
                 '''
