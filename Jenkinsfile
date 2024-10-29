@@ -59,7 +59,7 @@ pipeline {
             steps {
                 echo "Starting OSV Scanner..."
                 sh '''
-                    osv-scanner scan --lockfile ${WORKSPACE}/package-lock.json --json > raport_osv.json
+                    osv-scanner scan --lockfile ${WORKSPACE}/package-lock.json --json > ${WORKSPACE}/raport_osv.json
                 '''
                 echo "Listing contents of /home/kacper/Documents/DevSecOps/Test/osv_reports directory..."
                 sh 'ls -la'
