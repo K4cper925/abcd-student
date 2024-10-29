@@ -21,7 +21,7 @@ pipeline {
        
     }
 
-    ppost {
+    post {
         always {
             script {
                 //echo "Cleaning up Docker containers..."
