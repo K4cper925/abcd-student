@@ -36,7 +36,6 @@ pipeline {
             steps {
                 echo "Creating directory for scan results..."
                 sh '''
-                    pwd
                     mkdir -p /home/kacper/Documents/DevSecOps/Test/osv_reports
                     chmod -R 777 /home/kacper/Documents/DevSecOps/Test/osv_reports
                 '''
@@ -60,10 +59,10 @@ pipeline {
             steps {
                 echo "Starting OSV Scanner..."
                 sh '''
-                    osv-scanner scan --lockfile /home/kacper/Documents/DevSecOps/abcd-student/package-lock.json --json > /home/kacper/Documents/DevSecOps/Test/osv_reports/raport_osv.json
+                    osv-scanner scan --lockfile ${WORKSPACE}/package-lock.json --json > raport_osv.json
                 '''
                 echo "Listing contents of /home/kacper/Documents/DevSecOps/Test/osv_reports directory..."
-                sh 'ls -al /home/kacper/Documents/DevSecOps/Test/osv_reports/'
+                sh 'ls -la'
                 
                 
                 echo "OSV Scanner scan complete. Waiting for 5 seconds..."
@@ -75,6 +74,7 @@ pipeline {
             steps {
                 echo "Verifying scan results..."
                 sh '''
+                    cp ${WORKSPACE}/raport_osv.json home/kacper/Documents/DevSecOps/Test/raport_osv.json 
                     ls -al /home/kacper/Documents/DevSecOps/Test/osv-reports/
                 '''
                 echo "Archiving scan results..."
@@ -96,9 +96,9 @@ pipeline {
                 //echo "Containers stopped and removed."
 
                 echo "Checking if ZAP XML report exists..."
-                if (fileExists('/home/kacper/Documents/DevSecOps/Test/osv_reports/raport_osv.json')) {
+                if (fileExists('${WORKSPACE}/raport_osv.json')) {
                     echo "Sending ZAP XML report to DefectDojo..."
-                    defectDojoPublisher(artifact: '/home/kacper/Documents/DevSecOps/Test/reports/raport_osv.json',
+                    defectDojoPublisher(artifact: '${WORKSPACE}/raport_osv.json',
                                         productName: 'Juice Shop',
                                         scanType: 'OSV Scan',
                                         engagementName: 'kacperczerwinski925@wp.pl')
