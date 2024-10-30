@@ -24,7 +24,7 @@ pipeline {
             steps {
                 // Uruchomienie skanowania
                 sh '''
-                docker run -rm -v /home/kacper/Documents/DevSecOps/abcd-student:/app my-osv-scanner osv-scanner scan --lockfile /app/package-lock.json --json > osv_report.json  
+                docker run --rm -v /home/kacper/Documents/DevSecOps/abcd-student:/app my-osv-scanner osv-scanner scan --lockfile /app/package-lock.json --json > osv_report.json  
                 '''
             }
         }
