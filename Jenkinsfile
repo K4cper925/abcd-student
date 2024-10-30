@@ -20,9 +20,8 @@ pipeline {
         }
 
 
-         stage('Run osv-scanner') {
+        stage('Run osv-scanner') {
             steps {
-                // Uruchomienie skanowania
                 sh '''
                 osv-scanner scan --lockfile package-lock.json --json > osv_report.json  
                 '''
@@ -80,7 +79,7 @@ pipeline {
                     defectDojoPublisher(artifact: 'osv_report.json',
                                         productName: 'Juice Shop',
                                         scanType: 'OSV Scan',
-                                        engagementName: 'kacperczerwinski925@wp.pl')
+                                        engagementName: 'kacper.czerwinski925@wp.pl')
                 } else {
                     echo "OSV report not found, skipping DefectDojo upload."
                 }
