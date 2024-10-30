@@ -1,0 +1,18 @@
+# Użyj lekkiego obrazu bazowego, na przykład Ubuntu
+FROM ubuntu:latest
+
+# Zaktualizuj repozytoria i zainstaluj wymagane narzędzia
+RUN apt-get update && \
+    apt-get install -y curl unzip && \
+    rm -rf /var/lib/apt/lists/*
+
+# Pobierz i zainstaluj osv-scanner
+RUN curl -L -o osv-scanner https://github.com/google/osv-scanner/releases/download/v1.9.0/osv-scanner_linux_amd64 && \
+    mv osv-scanner /usr/local/bin && \
+    chmod +x /usr/local/bin/osv-scanner
+
+# Ustaw katalog roboczy (opcjonalne)
+WORKDIR /app
+
+# Komenda do uruchomienia raportu przy starcie kontenera
+CMD ["osv-scanner", "--help"]

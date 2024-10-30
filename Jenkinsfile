@@ -10,7 +10,7 @@ pipeline {
                 script {
                     cleanWs()
                     echo "Checking out code from GitHub repository..."
-                    git credentialsId: 'github-pat', url: 'https://github.com/K4cper925/abcd-student', branch: 'main'
+                    git credentialsId: 'github-pat', url: 'https://github.com/K4cper925/abcd-student', branch: 'osv'
                     echo "Code checked out. Listing workspace contents..."
                     sh 'ls -al ${WORKSPACE}'
                     echo "Waiting for 5 seconds..."
@@ -20,58 +20,52 @@ pipeline {
         }
 
 
-        stage('Step 2: Prepare Directory') {
+         stage('Run osv-scanner') {
             steps {
-                echo "Creating directory..."
+                // Uruchomienie skanowania
                 sh '''
-                    mkdir -p /home/kacper/Documents/DevSecOps/Test/osv_reports
-                    chmod -R 777 /home/kacper/Documents/DevSecOps/Test/osv_reports
-                    osv-scanner --version
+                docker run -v /home/kacper/Documents/DevSecOps/abcd-student:/app my-osv-scanner osv-scanner scan --lockfile /app/package-lock.json --json > osv_report.json  
                 '''
-                echo "Directory created. Waiting for 5 seconds..."
-                sleep(5)
+            }
+        }
+        stage('Copy Report to abcd-lab') {
+            steps {
+                // Przeniesienie raportu do kontenera abcd-lab
+                sh 'docker cp osv_report.json abcd-lab:/osv_report.json'
             }
         }
 
-        //stage('Step 4: Copy passive.yaml File') {
+
+
+
+        //stage('Step 5: Run OSV Scanner') {
         //    steps {
-        //        echo "Copying passive.yaml file from repository to workspace..."
+        //        echo "Starting OSV Scanner..."
         //        sh '''
-        //            cp ${WORKSPACE}/passive_scan.yaml /home/kacper/Documents/DevSecOps/Test/passive_scan.yaml
+        //            "osv-scanner scan --lockfile ${WORKSPACE}/package-lock.json --json > ${WORKSPACE}/raport_osv.json"
         //        '''
-        //        echo "File copied. Waiting for 5 seconds..."
+        //        echo "Listing contents of /home/kacper/Documents/DevSecOps/Test/osv_reports directory..."
+        //        sh 'ls -al ${WORKSPACE}/raport_osv.json || true'
+        //        
+        //        
+        //        echo "OSV Scanner scan complete. Waiting for 5 seconds..."
         //        sleep(5)
         //    }
         //}
 
-        stage('Step 5: Run OSV Scanner') {
-            steps {
-                echo "Starting OSV Scanner..."
-                sh '''
-                    "osv-scanner scan --lockfile ${WORKSPACE}/package-lock.json --json > ${WORKSPACE}/raport_osv.json"
-                '''
-                echo "Listing contents of /home/kacper/Documents/DevSecOps/Test/osv_reports directory..."
-                sh 'ls -al ${WORKSPACE}/raport_osv.json || true'
-                
-                
-                echo "OSV Scanner scan complete. Waiting for 5 seconds..."
-                sleep(5)
-            }
-        }
-
-        stage('Step 6: Verify and Archive Scan Results') {
-            steps {
-                echo "Verifying scan results..."
-                sh '''
-                    cp ${WORKSPACE}/raport_osv.json home/kacper/Documents/DevSecOps/Test/raport_osv.json 
-                    ls -al /home/kacper/Documents/DevSecOps/Test/osv-reports/
-                '''
-                echo "Archiving scan results..."
-                archiveArtifacts artifacts: '/home/kacper/Documents/DevSecOps/Test/osv_reports/**/*', fingerprint: true, allowEmptyArchive: true
-                echo "Scan results archived. Waiting for 5 seconds..."
-                sleep(5)
-            }
-        }
+        //stage('Step 6: Verify and Archive Scan Results') {
+        //    steps {
+        //        echo "Verifying scan results..."
+        //        sh '''
+        //            cp ${WORKSPACE}/raport_osv.json home/kacper/Documents/DevSecOps/Test/raport_osv.json 
+        //            ls -al /home/kacper/Documents/DevSecOps/Test/osv-reports/
+        //        '''
+        //        echo "Archiving scan results..."
+        //        archiveArtifacts artifacts: '/home/kacper/Documents/DevSecOps/Test/osv_reports/**/*', fingerprint: true, allowEmptyArchive: true
+//                echo "Scan results archived. Waiting for 5 seconds..."
+//                sleep(5)
+//            }
+//        }
     }
 
     post {
@@ -83,11 +77,14 @@ pipeline {
                 //    docker rm zap juice-shop || true
                 //'''
                 //echo "Containers stopped and removed."
-
+		sh '''
+			pwd
+			ls -la
+		'''
                 echo "Checking if OSV report exists..."
-                if (fileExists('${WORKSPACE}/raport_osv.json')) {
+                if (fileExists('${WORKSPACE}/osv_report.json')) {
                     echo "Sending OSV report to DefectDojo..."
-                    defectDojoPublisher(artifact: '${WORKSPACE}/raport_osv.json',
+                    defectDojoPublisher(artifact: '${WORKSPACE}/osv_report.json',
                                         productName: 'Juice Shop',
                                         scanType: 'OSV Scan',
                                         engagementName: 'kacperczerwinski925@wp.pl')
