@@ -82,9 +82,9 @@ pipeline {
 			ls -la
 		'''
                 echo "Checking if OSV report exists..."
-                if (fileExists('${WORKSPACE}/osv_report.json')) {
+                if (fileExists('osv_report.json')) {
                     echo "Sending OSV report to DefectDojo..."
-                    defectDojoPublisher(artifact: '${WORKSPACE}/osv_report.json',
+                    defectDojoPublisher(artifact: 'osv_report.json',
                                         productName: 'Juice Shop',
                                         scanType: 'OSV Scan',
                                         engagementName: 'kacperczerwinski925@wp.pl')
