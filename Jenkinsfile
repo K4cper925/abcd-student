@@ -24,7 +24,7 @@ pipeline {
             steps {
                 // Uruchomienie skanowania
                 sh '''
-                osv-scanner scan --lockfile /app/package-lock.json --json > osv_report.json  
+                osv-scanner scan --lockfile package-lock.json --json > osv_report.json  
                 '''
             }
         }
