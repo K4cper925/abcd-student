@@ -38,7 +38,7 @@ pipeline {
                     sh "docker wait ${containerId}"
 
                     // Skopiowanie pliku z kontenera na hosta
-                    sh "docker cp ${containerId}:/app/osv_report.json /home/kacper/Documents/DevSecOps/abcd-student/osv_report.json"
+                    sh "docker cp ${containerId}:/app/osv_report.json abcd-lab:/osv_report.json"
 
                     // Zatrzymanie kontenera
                     sh "docker stop ${containerId}"
