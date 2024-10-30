@@ -24,14 +24,13 @@ pipeline {
             steps {
                 // Uruchomienie skanowania
                 sh '''
-                docker run --rm -v /home/kacper/Documents/DevSecOps/abcd-student:/app my-osv-scanner osv-scanner scan --lockfile /app/package-lock.json --json > osv_report.json  
+                osv-scanner scan --lockfile /app/package-lock.json --json > osv_report.json  
                 '''
             }
         }
-        stage('Copy Report to abcd-lab') {
+        stage('Verify if file exist') {
             steps {
-                // Przeniesienie raportu do kontenera abcd-lab
-                sh 'docker cp osv_report.json abcd-lab:/osv_report.json'
+                sh 'ls -al osv_report.json'
             }
         }
 
@@ -71,12 +70,6 @@ pipeline {
     post {
         always {
             script {
-                //echo "Cleaning up Docker containers..."
-                //sh '''
-                //    docker stop zap juice-shop || true
-                //    docker rm zap juice-shop || true
-                //'''
-                //echo "Containers stopped and removed."
 		sh '''
 			pwd
 			ls -la
