@@ -22,9 +22,7 @@ pipeline {
 
         stage('Run osv-scanner') {
             steps {
-                sh '''
-                osv-scanner scan --lockfile package-lock.json --json > osv_report.json  
-                '''
+                sh("osv-scanner scan --lockfile package-lock.json --json > osv_report.json")
             }
         }
         stage('Verify if file exist') {
