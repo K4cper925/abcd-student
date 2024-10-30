@@ -23,17 +23,34 @@ pipeline {
          stage('Run osv-scanner') {
             steps {
                 // Uruchomienie skanowania
-                sh '''
-                docker run --rm -v /home/kacper/Documents/DevSecOps/abcd-student:/app my-osv-scanner osv-scanner scan --lockfile /app/package-lock.json --json > osv_report.json  
-                '''
+                //sh '''
+                //docker run --rm -v /home/kacper/Documents/DevSecOps/abcd-student:/app my-osv-scanner osv-scanner scan --lockfile /app/package-lock.json --json > osv_report.json  
+                //'''
+                script {
+                    // Uruchomienie kontenera w tle
+                    def containerId = sh(script: '''
+                        docker run -d -v /home/kacper/Documents/DevSecOps/abcd-student:/app my-osv-scanner osv-scanner scan --lockfile /app/package-lock.json --json
+                    ''', returnStdout: true).trim()
+                    
+                    echo "Uruchomiono kontener o ID: ${containerId}"
+
+                    // Czekanie na zakończenie kontenera
+                    sh "docker wait ${containerId}"
+
+                    // Skopiowanie pliku z kontenera na hosta
+                    sh "docker cp ${containerId}:/app/osv_report.json /home/kacper/Documents/DevSecOps/abcd-student/osv_report.json"
+
+                    // Zatrzymanie kontenera
+                    sh "docker stop ${containerId}"
+                }
             }
         }
-        stage('Copy Report to abcd-lab') {
-            steps {
-                // Przeniesienie raportu do kontenera abcd-lab
-                sh 'docker cp osv_report.json abcd-lab:/osv_report.json'
-            }
-        }
+        //stage('Copy Report to abcd-lab') {
+        //    steps {
+        //        // Przeniesienie raportu do kontenera abcd-lab
+        //        sh 'docker cp osv_report.json abcd-lab:/osv_report.json'
+        //    }
+        //}
 
 
 
