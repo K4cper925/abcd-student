@@ -26,7 +26,7 @@ pipeline {
         }
         stage('Verify if file exist') {
             steps {
-                sh 'ls -al trufflehog_report.json'
+                sh 'ls -al semgrep_report.json'
             }
         }
     }
