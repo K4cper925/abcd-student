@@ -21,7 +21,7 @@ pipeline {
 
         stage('Run SAST scan with auto semgrep') {
             steps {
-                sh("tsemgrep scan --config auto --json > semgrep_report.json || true")
+                sh("semgrep scan --config auto --json > semgrep_report.json || true")
             }
         }
         stage('Verify if file exist') {
