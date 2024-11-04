@@ -10,7 +10,7 @@ pipeline {
                 script {
                     cleanWs()
                     echo "Checking out code from GitHub repository..."
-                    git credentialsId: 'github-pat', url: 'https://github.com/K4cper925/abcd-student', branch: 'secrets'
+                    git credentialsId: 'github-pat', url: 'https://github.com/K4cper925/abcd-student', branch: 'semgrep'
                     echo "Code checked out. Listing workspace contents..."
                     sh 'ls -al ${WORKSPACE}'
                     echo "Waiting for 5 seconds..."
@@ -19,9 +19,9 @@ pipeline {
             }
         }
 
-        stage('Looking for secrets in repository') {
+        stage('Run SAST scan with auto semgrep') {
             steps {
-                sh("trufflehog git https://github.com/K4cper925/abcd-student.git --branch main --only-verified --json > trufflehog_report.json || true")
+                sh("tsemgrep scan --config auto --json > semgrep_report.json || true")
             }
         }
         stage('Verify if file exist') {
@@ -38,12 +38,12 @@ pipeline {
 			pwd
 			ls -la
 		'''
-                echo "Checking if OSV report exists..."
-                if (fileExists('trufflehog_report.json')) {
-                    echo "Sending OSV report to DefectDojo..."
-                    defectDojoPublisher(artifact: 'trufflehog_report.json',
+                echo "Checking if semgrep report exists..."
+                if (fileExists('semgrep_report.json')) {
+                    echo "Sending semgrep report to DefectDojo..."
+                    defectDojoPublisher(artifact: 'semgrep_report.json',
                                         productName: 'Juice Shop',
-                                        scanType: 'Trufflehog Scan',
+                                        scanType: 'Semgrep JSON Report',
                                         engagementName: 'kacper.czerwinski925@wp.pl')
                 } else {
                     echo "OSV report not found, skipping DefectDojo upload."
