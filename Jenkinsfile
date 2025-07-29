@@ -90,7 +90,7 @@ pipeline {
                     defectDojoPublisher(artifact: '${WORKSPACE}/raport_osv.json',
                                         productName: 'Juice Shop',
                                         scanType: 'OSV Scan',
-                                        engagementName: 'kacperczerwinski925@wp.pl')
+                                        engagementName: '<email>')
                 } else {
                     echo "OSV report not found, skipping DefectDojo upload."
                 }
